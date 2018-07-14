@@ -47,18 +47,45 @@ class Grid:
 
     
     # def remove_agent(self, agent, loc=None, loc_guess=None, radius=1):
-    def remove_agent(self, agent):
-        for row in self.grid:
-            for bucket in row:
-                if agent in bucket:
-                    bucket.remove(agent)
-                    return True
+    def remove_agent(self, agent, loc=None):
+        """ remove an agent from the grid, check loc if specified """
+        if loc is not None:
+            loc_x = loc[0]
+            loc_y = loc[1]
+            bucket = self.grid[loc_y][loc_x]
+            if agent in bucket:
+                bucket.remove(agent)
+                return True
+        else:
+            for row in self.grid:
+                for bucket in row:
+                    if agent in bucket:
+                        bucket.remove(agent)
+                        return True
         return False
 
 
-    
+    def get_agents_in_region(self, bounds):
+        agents = []
+        for b in bounds:
+            b = convert_pos_to_loc(b)
+        (x_min, x_max, y_min, y_max) = bounds
+        subgrid = self.grid[y_min:y_max+1][x_min:x_max+1]
+        for row in subgrid:
+            for bucket in row:
+                agents += bucket
+        return agents
 
 
+    def get_occupied_locs(self):
+        """ return the locations occupied by agents in the grid """
+        locs_occupied = []
+        for i in range(len(self.grid)):
+            row = self.grid[i]
+            for j in range(len(row)):
+                if len(row[j]) > 0:
+                    locs_occupied.append((j,i))
+        return locs_occupied
 
 
     def convert_pos_to_loc(self, pos):
